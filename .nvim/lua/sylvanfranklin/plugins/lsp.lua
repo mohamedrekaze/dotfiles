@@ -16,6 +16,7 @@ return {
             float = { border = "rounded" }
         })
 
+        vim.o.updatetime = 300
         local cmp = require('cmp')
         local cmp_lsp = require("cmp_nvim_lsp")
         local capabilities = vim.tbl_deep_extend(
@@ -157,6 +158,24 @@ return {
                 vim.keymap.set("n", "<leader>k", function() vim.diagnostic.open_float() end, opts)
                 vim.keymap.set("n", "<leader>ln", function() vim.diagnostic.goto_next() end, opts)
                 vim.keymap.set("n", "<leader>lp", function() vim.diagnostic.goto_prev() end, opts)
+
+                vim.api.nvim_create_autocmd("CursorHold", {
+                    buffer = e.buf,
+                    callback = function()
+                        local float_opts = {
+                            focusable = false,
+                            scope = "cursor",
+                            border = "rounded",
+                            source = "always", -- show even if from multiple sources
+                            prefix = "  ",
+                            format = function(diagnostic)
+                                return string.format("%s (%s)", diagnostic.message, diagnostic.source or "LSP")
+                            end,
+                        }
+                        vim.diagnostic.open_float(nil, float_opts)
+                    end,
+                    desc = "Show diagnostics information on cursor hold",
+                })
             end
         })
     end
