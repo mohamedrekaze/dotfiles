@@ -22,16 +22,17 @@ vim.opt.scrolloff = 4
 vim.opt.signcolumn = "yes"
 vim.opt.foldopen = "mark,percent,quickfix,search,tag,undo"
 vim.opt.clipboard = "unnamedplus"
+vim.o.updatetime = 200
 
 local map = vim.keymap.set
 vim.g.mapleader = " "
 
 vim.pack.add({
-	{ src = "https://github.com/vague2k/vague.nvim" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
-	{ src = 'https://github.com/neovim/nvim-lspconfig' },
-	{ src = "https://github.com/mason-org/mason.nvim" },
-	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+    { src = "https://github.com/vague2k/vague.nvim" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
+    { src = "https://github.com/mason-org/mason.nvim" },
+    { src = "https://github.com/L3MON4D3/LuaSnip" },
     { src = "https://github.com/hrsh7th/nvim-cmp" },
     { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
     { src = "https://github.com/hrsh7th/cmp-buffer" },
@@ -39,49 +40,65 @@ vim.pack.add({
     { src = "https://github.com/hrsh7th/cmp-cmdline" },
     { src = "https://github.com/L3MON4D3/LuaSnip" },
     { src = "https://github.com/saadparwaiz1/cmp_luasnip" },
+    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+    { src = "https://github.com/tigran-sargsyan-w/nvim-42-format"},
+    { src = "https://github.com/Diogo-ss/42-header.nvim"},
+    { src = "https://github.com/hardyrafael17/norminette42.nvim"},
 })
 
+require("utils_42")
 require "mason".setup()
 
 map('t', '', "␎")
 map('t', '␏', "␏")
 map('n', '<leader>lf', vim.lsp.buf.format)
 
-vim.lsp.enable({ "lua_ls", "svelte", "tinymist", "emmetls" , "pyright"})
-
-local cmp = require'cmp'
-
+local cmp = require 'cmp'
 cmp.setup({
-  mapping = cmp.mapping.preset.insert({
-    ['<C-n>'] = cmp.mapping.select_next_item(), -- move down
-    ['<C-p>'] = cmp.mapping.select_prev_item(), -- move up
-    ['<CR>']  = cmp.mapping.confirm({ select = true }), -- accept suggestion
-    ['<C-Space>'] = cmp.mapping.complete(), -- manually trigger
-  }),
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  }, {
-    { name = 'buffer' },
-    { name = 'path' },
-  })
+    mapping = cmp.mapping.preset.insert({
+        ['<C-n>']     = cmp.mapping.select_next_item(),         -- move down
+        ['<C-p>']     = cmp.mapping.select_prev_item(),         -- move up
+        ['<CR>']      = cmp.mapping.confirm({ select = true }), -- accept suggestion
+        ['<C-Space>'] = cmp.mapping.complete(),                 -- manually trigger
+    }),
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+    }, {
+        { name = 'buffer' },
+        { name = 'path' },
+    })
 })
 
 vim.diagnostic.config({
     underline = false,
-    virtual_lines = false,
-    virtual_text = true,
-    signs = false,
+    virtual_text = false,
+    signs = true,
+    float = {
+        border = "rounded",
+        source = "always", -- show source in popup
+        width = 60,
+    },
+})
+
+-- Show diagnostics in a floating window when you hold the cursor
+vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+        vim.diagnostic.open_float(nil, {
+            focus = false,
+        })
+    end,
 })
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-for _, server in ipairs({ "lua_ls", "clangd", "tinymist" , "pyright" }) do
-  require('lspconfig')[server].setup {
-    capabilities = capabilities,
-  }
+for _, server in ipairs({ "lua_ls", "clangd", "tinymist", "pyright" }) do
+    require('lspconfig')[server].setup {
+        capabilities = capabilities,
+    }
 end
 
 -- colors
 require "vague".setup({ transparent = true })
 vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=NONE")
+vim.api.nvim_set_hl(0, "Comment", { fg = "#A0A0A0", italic = true })
