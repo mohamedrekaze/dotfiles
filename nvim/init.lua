@@ -27,27 +27,70 @@ vim.o.updatetime = 200
 local map = vim.keymap.set
 vim.g.mapleader = " "
 
-vim.pack.add({
-    { src = "https://github.com/vague2k/vague.nvim" },
-    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
-    { src = 'https://github.com/neovim/nvim-lspconfig' },
-    { src = "https://github.com/mason-org/mason.nvim" },
-    { src = "https://github.com/L3MON4D3/LuaSnip" },
-    { src = "https://github.com/hrsh7th/nvim-cmp" },
-    { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
-    { src = "https://github.com/hrsh7th/cmp-buffer" },
-    { src = "https://github.com/hrsh7th/cmp-path" },
-    { src = "https://github.com/hrsh7th/cmp-cmdline" },
-    { src = "https://github.com/L3MON4D3/LuaSnip" },
-    { src = "https://github.com/saadparwaiz1/cmp_luasnip" },
-    { src = "https://github.com/lewis6991/gitsigns.nvim" },
-    { src = "https://github.com/tigran-sargsyan-w/nvim-42-format"},
-    { src = "https://github.com/Diogo-ss/42-header.nvim"},
-    { src = "https://github.com/hardyrafael17/norminette42.nvim"},
+-- lazy.nvim bootstrap
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- suppress deprecation warnings from lspconfig
+vim.notify = (function(orig)
+  return function(msg, level, opts)
+    if msg:match("require%(\'lspconfig\'%) \"framework\" is deprecated") then
+      return
+    end
+    orig(msg, level, opts)
+  end
+end)(vim.notify)
+
+-- plugin list (converted from your vim.pack block)
+require("lazy").setup({
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  { "neovim/nvim-lspconfig" },
+  { "mason-org/mason.nvim" },
+  { "L3MON4D3/LuaSnip" },
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-path" },
+  { "hrsh7th/cmp-cmdline" },
+  { "saadparwaiz1/cmp_luasnip" },
+  { "lewis6991/gitsigns.nvim" },
+  { "tigran-sargsyan-w/nvim-42-format" },
+  { "Diogo-ss/42-header.nvim" },
+  { "hardyrafael17/norminette42.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "vague2k/vague.nvim" },
 })
 
+require("mason").setup()
+
+local mason_lspconfig = require("mason-lspconfig")
+mason_lspconfig.setup({
+    ensure_installed = { "lua_ls", "clangd", "pyright", "tinymist" },
+    automatic_installation = true,
+})
+
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local servers = { "lua_ls", "clangd", "pyright" }
+
+for _, name in ipairs(servers) do
+    if vim.lsp.config[name] then
+        vim.lsp.config[name] = vim.tbl_deep_extend('force', vim.lsp.config[name], {
+            capabilities = capabilities
+        })
+    end
+    vim.lsp.enable(name)
+end
+
 require("utils_42")
-require "mason".setup()
 
 map('t', '', "␎")
 map('t', '␏', "␏")
@@ -89,13 +132,6 @@ vim.api.nvim_create_autocmd("CursorHold", {
         })
     end,
 })
-
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-for _, server in ipairs({ "lua_ls", "clangd", "tinymist", "pyright" }) do
-    require('lspconfig')[server].setup {
-        capabilities = capabilities,
-    }
-end
 
 -- colors
 require "vague".setup({ transparent = true })

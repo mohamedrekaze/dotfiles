@@ -25,7 +25,7 @@ if ok3 then
     header.setup({
         default_map = true,
         auto_update = true,
-        user = "mohamed",
+        user = "morekaz",
         mail = "morekaz@student.1337.ma",
         git = { enabled = true },
     })
