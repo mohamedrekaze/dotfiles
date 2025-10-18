@@ -16,7 +16,7 @@ if ok2 then
         filetypes = { c = true, h = true, cpp = true, hpp = true },
     })
     -- optional keybinding
-    vim.keymap.set("n", "<F2>", "<cmd>Format<cr>", { desc = "Format with 42 formatter" })
+    vim.keymap.set("n", "<leader>f", "<cmd>Format<cr>", { desc = "Format with 42 formatter" })
 end
 
 -- 42header.nvim setup
@@ -29,4 +29,5 @@ if ok3 then
         mail = "morekaz@student.1337.ma",
         git = { enabled = true },
     })
+    vim.keymap.set("n", "<leader>h", "<cmd>Stdheader<cr>", { desc = "Format with 42 formatter" })
 end

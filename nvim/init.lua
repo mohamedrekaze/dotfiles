@@ -1,19 +1,19 @@
 vim.opt.mouse = "a"
+vim.opt.smoothscroll = true
 vim.opt.tabstop = 4
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor100"
 vim.opt.cursorcolumn = false
 vim.opt.cursorline = false
-vim.opt.softtabstop = 4
+-- vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
-vim.opt.smartindent = false
-vim.opt.expandtab = true
+vim.opt.smartindent = true
+vim.opt.expandtab = false
 vim.opt.wrap = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 vim.opt.backup = false
-vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.ignorecase = true
 vim.opt.undofile = true
 vim.opt.incsearch = true
@@ -40,78 +40,182 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- suppress deprecation warnings from lspconfig
-vim.notify = (function(orig)
-  return function(msg, level, opts)
-    if msg:match("require%(\'lspconfig\'%) \"framework\" is deprecated") then
-      return
-    end
-    orig(msg, level, opts)
-  end
-end)(vim.notify)
-
--- plugin list (converted from your vim.pack block)
 require("lazy").setup({
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-  { "neovim/nvim-lspconfig" },
-  { "mason-org/mason.nvim" },
-  { "L3MON4D3/LuaSnip" },
-  { "hrsh7th/nvim-cmp" },
-  { "hrsh7th/cmp-nvim-lsp" },
-  { "hrsh7th/cmp-buffer" },
-  { "hrsh7th/cmp-path" },
-  { "hrsh7th/cmp-cmdline" },
-  { "saadparwaiz1/cmp_luasnip" },
-  { "lewis6991/gitsigns.nvim" },
-  { "tigran-sargsyan-w/nvim-42-format" },
-  { "Diogo-ss/42-header.nvim" },
-  { "hardyrafael17/norminette42.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
-  { "vague2k/vague.nvim" },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        event = "BufReadPost",  -- load after first buffer is read
+        build = function()
+            -- run tsupdate asynchronously so it doesn't block startup
+            vim.schedule(function()
+                vim.cmd("tsupdate")
+            end)
+        end,
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                ensure_installed = { "c", "cpp", "lua", "python", "javascript" },
+                highlight = { enable = true, additional_vim_regex_highlighting = false },
+                incremental_selection = { enable = true },
+                indent = { enable = true },
+            })
+        end,
+    },
+    {
+        "neovim/nvim-lspconfig",
+    },
+    {
+      "diogo-ss/42-header.nvim",
+        cmd = { "Stdheader" },
+        keys = { {"<f1>"},
+            { "<leader>h", "<cmd>Stdheader<cr>", desc = "insert or update 42 header" },
+        },
+      opts = {
+        default_map = true,
+        auto_update = true,
+        user = "morekaz",
+        mail = "morekaz@student.1337.ma",
+        git = { enabled = true },
+      },
+      config = function(_, opts)
+        require("42header").setup(opts)
+      end,
+    },
+    {
+        "hardyrafael17/norminette42.nvim",
+        event = "BufReadPre",
+        config = function()
+            local norminette = require("norminette")
+            norminette.setup({
+                -- runonsave = true,
+                maxerrorstoshow = 5,
+                active = true,
+                filetypes = { c = true, h = true, cpp = true, hpp = true },
+            })
+        end,
+    },
+    {
+        "diogo-ss/42-c-formatter.nvim",
+        cmd = "CFormat42",
+        keys = {
+            {"<leader>f", "<cmd>CFormat42<cr>", desc = "format with 42 c formatter"},
+        },
+        config = function()
+            local formatter = require "42-formatter"
+            formatter.setup({
+                formatter = 'c_formatter_42',
+                filetypes = { c = true, h = true, cpp = true, hpp = true },
+				runonsave = false,
+            })
+        end
+    },
+    {
+        "l3mon4d3/luasnip",
+        event = "InsertEnter",
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+            require("luasnip.loaders.from_lua").lazy_load()
+            require("luasnip.loaders.from_snipmate").lazy_load()
+        end,
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        event = "InsertEnter",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "saadparwaiz1/cmp_luasnip",
+        },
+        config = function()
+            local cmp = require("cmp")
+            local luasnip = require("luasnip")
+
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        luasnip.lsp_expand(args.body)
+                    end,
+                },
+                mapping = cmp.mapping.preset.insert({
+                    ["<c-n>"] = cmp.mapping.select_next_item(),
+                    ["<c-p>"] = cmp.mapping.select_prev_item(),
+                    ["<cr>"] = cmp.mapping.confirm({ select = true }),
+                }),
+                sources = {
+                    { name = "nvim_lsp" },
+                    { name = "buffer" },
+                    { name = "path" },
+                    { name = "luasnip" },
+                },
+            })
+        end,
+    },
+    {
+        "vague-theme/vague.nvim",
+        event = "VimEnter",  -- loads on startup
+    },
+    {
+        "williamboman/mason.nvim",
+        cmd = { "Mason", "Masoninstall", "Masonuninstall" },
+        config = function()
+            require("mason").setup()
+        end,
+    },
+    {
+        "williamboman/mason-lspconfig.nvim",
+        after = "mason.nvim",
+        config = function()
+            require("mason-lspconfig").setup()
+        end,
+    },
+    {
+        "lewis6991/gitsigns.nvim",
+        event = "BufReadPre",
+        config = function()
+            require("gitsigns").setup()
+        end,
+    },
 })
+-- require("utils_42")
+
+-- map('t', '', "␎")
+-- map('t', '␏', "␏")
+-- map('n', '<leader>lf', vim.lsp.buf.format)
+
+-- local cmp = require 'cmp'
+-- cmp.setup({
+--     mapping = cmp.mapping.preset.insert({
+--         ['<c-n>']     = cmp.mapping.select_next_item(),         -- move down
+--         ['<c-p>']     = cmp.mapping.select_prev_item(),         -- move up
+--         ['<cr>']      = cmp.mapping.confirm({ select = true }), -- accept suggestion
+--         ['<c-space>'] = cmp.mapping.complete(),                 -- manually trigger
+--     }),
+--     sources = cmp.config.sources({
+--         { name = 'nvim_lsp' },
+--         { name = 'luasnip' },
+--     }, {
+--             { name = 'buffer' },
+--             { name = 'path' },
+--         })
+-- })
 
 require("mason").setup()
-
 local mason_lspconfig = require("mason-lspconfig")
 mason_lspconfig.setup({
-    ensure_installed = { "lua_ls", "clangd", "pyright", "tinymist" },
+    ensure_installed = { "lua_ls", "clangd" },
     automatic_installation = true,
 })
 
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local servers = { "lua_ls", "clangd", "pyright" }
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+local servers = { "lua_ls", "clangd" }
 
 for _, name in ipairs(servers) do
-    if vim.lsp.config[name] then
-        vim.lsp.config[name] = vim.tbl_deep_extend('force', vim.lsp.config[name], {
-            capabilities = capabilities
-        })
-    end
-    vim.lsp.enable(name)
+  vim.lsp.config[name] = {
+    capabilities = capabilities,
+  }
 end
 
-require("utils_42")
 
-map('t', '', "␎")
-map('t', '␏', "␏")
-map('n', '<leader>lf', vim.lsp.buf.format)
-
-local cmp = require 'cmp'
-cmp.setup({
-    mapping = cmp.mapping.preset.insert({
-        ['<C-n>']     = cmp.mapping.select_next_item(),         -- move down
-        ['<C-p>']     = cmp.mapping.select_prev_item(),         -- move up
-        ['<CR>']      = cmp.mapping.confirm({ select = true }), -- accept suggestion
-        ['<C-Space>'] = cmp.mapping.complete(),                 -- manually trigger
-    }),
-    sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
-    }, {
-        { name = 'buffer' },
-        { name = 'path' },
-    })
-})
 
 vim.diagnostic.config({
     underline = false,
@@ -124,8 +228,8 @@ vim.diagnostic.config({
     },
 })
 
--- Show diagnostics in a floating window when you hold the cursor
-vim.api.nvim_create_autocmd("CursorHold", {
+-- show diagnostics in a floating window when you hold the cursor
+vim.api.nvim_create_autocmd("cursorhold", {
     callback = function()
         vim.diagnostic.open_float(nil, {
             focus = false,
@@ -134,7 +238,6 @@ vim.api.nvim_create_autocmd("CursorHold", {
 })
 
 -- colors
-require "vague".setup({ transparent = true })
 vim.cmd("colorscheme vague")
-vim.cmd(":hi statusline guibg=NONE")
-vim.api.nvim_set_hl(0, "Comment", { fg = "#A0A0A0", italic = true })
+vim.cmd(":hi statusline guibg=none")
+vim.api.nvim_set_hl(0, "comment", { fg = "#a0a0a0", italic = true })
