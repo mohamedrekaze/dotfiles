@@ -111,9 +111,7 @@ require("lazy").setup({
         "l3mon4d3/luasnip",
         event = "InsertEnter",
         config = function()
-            require("luasnip.loaders.from_vscode").lazy_load()
-            require("luasnip.loaders.from_lua").lazy_load()
-            require("luasnip.loaders.from_snipmate").lazy_load()
+			require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/LuaSnip/snippets" })
         end,
     },
     {
@@ -175,28 +173,6 @@ require("lazy").setup({
         end,
     },
 })
--- require("utils_42")
-
--- map('t', '', "␎")
--- map('t', '␏', "␏")
--- map('n', '<leader>lf', vim.lsp.buf.format)
-
--- local cmp = require 'cmp'
--- cmp.setup({
---     mapping = cmp.mapping.preset.insert({
---         ['<c-n>']     = cmp.mapping.select_next_item(),         -- move down
---         ['<c-p>']     = cmp.mapping.select_prev_item(),         -- move up
---         ['<cr>']      = cmp.mapping.confirm({ select = true }), -- accept suggestion
---         ['<c-space>'] = cmp.mapping.complete(),                 -- manually trigger
---     }),
---     sources = cmp.config.sources({
---         { name = 'nvim_lsp' },
---         { name = 'luasnip' },
---     }, {
---             { name = 'buffer' },
---             { name = 'path' },
---         })
--- })
 
 require("mason").setup()
 local mason_lspconfig = require("mason-lspconfig")
@@ -214,8 +190,6 @@ for _, name in ipairs(servers) do
     capabilities = capabilities,
   }
 end
-
-
 
 vim.diagnostic.config({
     underline = false,
@@ -240,4 +214,5 @@ vim.api.nvim_create_autocmd("cursorhold", {
 -- colors
 vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=none")
-vim.api.nvim_set_hl(0, "comment", { fg = "#a0a0a0", italic = true })
+vim.cmd("hi Normal guibg=#000000 ctermbg=0")
+vim.api.nvim_set_hl(0, "comment", { fg = "#FFFAFA", italic = true })
