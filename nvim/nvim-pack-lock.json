@@ -1,3 +1,81 @@
 {
-  "plugins": []
+  "plugins": {
+    "42-header.nvim": {
+      "rev": "4303be09d9615e9169661b3e5d5a98c3eecee0ff",
+      "src": "https://github.com/Diogo-ss/42-header.nvim"
+    },
+    "LuaSnip": {
+      "rev": "3732756842a2f7e0e76a7b0487e9692072857277",
+      "src": "https://github.com/L3MON4D3/LuaSnip"
+    },
+    "black-metal-theme-neovim": {
+      "rev": "6d0207871387077f40d5396ab1ae90520e688d36",
+      "src": "https://github.com/metalelf0/black-metal-theme-neovim"
+    },
+    "cmp-buffer": {
+      "rev": "b74fab3656eea9de20a9b8116afa3cfc4ec09657",
+      "src": "https://github.com/hrsh7th/cmp-buffer"
+    },
+    "cmp-cmdline": {
+      "rev": "d126061b624e0af6c3a556428712dd4d4194ec6d",
+      "src": "https://github.com/hrsh7th/cmp-cmdline"
+    },
+    "cmp-nvim-lsp": {
+      "rev": "cbc7b02bb99fae35cb42f514762b89b5126651ef",
+      "src": "https://github.com/hrsh7th/cmp-nvim-lsp"
+    },
+    "cmp-path": {
+      "rev": "c642487086dbd9a93160e1679a1327be111cbc25",
+      "src": "https://github.com/hrsh7th/cmp-path"
+    },
+    "cmp_luasnip": {
+      "rev": "98d9cb5c2c38532bd9bdb481067b20fea8f32e90",
+      "src": "https://github.com/saadparwaiz1/cmp_luasnip"
+    },
+    "cord.nvim": {
+      "rev": "05d7154df41869864dc2a6b04c68a655a9c089dc",
+      "src": "https://github.com/vyfor/cord.nvim"
+    },
+    "gitsigns.nvim": {
+      "rev": "42d6aed4e94e0f0bbced16bbdcc42f57673bd75e",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "mason-lspconfig.nvim": {
+      "rev": "fe661093f4b05136437b531e7f959af2a2ae66c8",
+      "src": "https://github.com/williamboman/mason-lspconfig.nvim"
+    },
+    "mason-tool-installer.nvim": {
+      "rev": "517ef5994ef9d6b738322664d5fdd948f0fdeb46",
+      "src": "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim"
+    },
+    "mason.nvim": {
+      "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "norminette42.nvim": {
+      "rev": "4f6448fb9812a2405e0b9c7880c914de08d4e9f9",
+      "src": "https://github.com/hardyrafael17/norminette42.nvim"
+    },
+    "nvim-42-format": {
+      "rev": "deffe3d61cffed36578ed29924e80ff2fa2af179",
+      "src": "https://github.com/tigran-sargsyan-w/nvim-42-format"
+    },
+    "nvim-cmp": {
+      "rev": "85bbfad83f804f11688d1ab9486b459e699292d6",
+      "src": "https://github.com/hrsh7th/nvim-cmp"
+    },
+    "nvim-lspconfig": {
+      "rev": "92ee7d42320edfbb81f3cad851314ab197fa324a",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "nvim-treesitter": {
+      "rev": "5a7e5638e7d220575b1c22c8a2e099b52231886e",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter",
+      "version": "'main'"
+    },
+    "vague.nvim": {
+      "rev": "fcc283576764474ccfbbcca240797d5d7f4d8a78",
+      "src": "https://github.com/vague2k/vague.nvim"
+    }
+  }
 }

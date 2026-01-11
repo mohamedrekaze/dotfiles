@@ -1,19 +1,20 @@
+-- Basic settings
+vim.opt.expandtab = false
 vim.opt.mouse = "a"
-vim.opt.smoothscroll = true
 vim.opt.tabstop = 4
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor100"
 vim.opt.cursorcolumn = false
 vim.opt.cursorline = false
--- vim.opt.softtabstop = 4
+vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
-vim.opt.smartindent = true
-vim.opt.expandtab = false
+vim.opt.smartindent = false
 vim.opt.wrap = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 vim.opt.backup = false
+vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.ignorecase = true
 vim.opt.undofile = true
 vim.opt.incsearch = true
@@ -27,183 +28,166 @@ vim.o.updatetime = 200
 local map = vim.keymap.set
 vim.g.mapleader = " "
 
--- lazy.nvim bootstrap
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
+-- Key mappings
+map('t', '␛', "␜␎")
+map('t', '␏', "␜␏")
 
-require("lazy").setup({
-    {
-        "nvim-treesitter/nvim-treesitter",
-        event = "BufReadPost",  -- load after first buffer is read
-        build = function()
-            -- run tsupdate asynchronously so it doesn't block startup
-            vim.schedule(function()
-                vim.cmd("tsupdate")
-            end)
-        end,
-        config = function()
-            require("nvim-treesitter.configs").setup({
-                ensure_installed = { "c", "cpp", "lua", "python", "javascript" },
-                highlight = { enable = true, additional_vim_regex_highlighting = false },
-                incremental_selection = { enable = true },
-                indent = { enable = true },
-            })
-        end,
-    },
-    {
-        "neovim/nvim-lspconfig",
-    },
-    {
-      "diogo-ss/42-header.nvim",
-        cmd = { "Stdheader" },
-        keys = { {"<f1>"},
-            { "<leader>h", "<cmd>Stdheader<cr>", desc = "insert or update 42 header" },
-        },
-      opts = {
-        default_map = true,
-        auto_update = true,
-        user = "morekaz",
-        mail = "morekaz@student.1337.ma",
-        git = { enabled = true },
-      },
-      config = function(_, opts)
-        require("42header").setup(opts)
-      end,
-    },
-    {
-        "hardyrafael17/norminette42.nvim",
-        event = "BufReadPre",
-        config = function()
-            local norminette = require("norminette")
-            norminette.setup({
-                -- runonsave = true,
-                maxerrorstoshow = 5,
-                active = true,
-                filetypes = { c = true, h = true, cpp = true, hpp = true },
-            })
-        end,
-    },
-    {
-        "diogo-ss/42-c-formatter.nvim",
-        cmd = "CFormat42",
-        keys = {
-            {"<leader>f", "<cmd>CFormat42<cr>", desc = "format with 42 c formatter"},
-        },
-        config = function()
-            local formatter = require "42-formatter"
-            formatter.setup({
-                formatter = 'c_formatter_42',
-                filetypes = { c = true, h = true, cpp = true, hpp = true },
-				runonsave = false,
-            })
-        end
-    },
-    {
-        "l3mon4d3/luasnip",
-        event = "InsertEnter",
-        config = function()
-			require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/LuaSnip/snippets" })
-        end,
-    },
-    {
-        "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-path",
-            "saadparwaiz1/cmp_luasnip",
-        },
-        config = function()
-            local cmp = require("cmp")
-            local luasnip = require("luasnip")
-
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body)
-                    end,
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ["<c-n>"] = cmp.mapping.select_next_item(),
-                    ["<c-p>"] = cmp.mapping.select_prev_item(),
-                    ["<cr>"] = cmp.mapping.confirm({ select = true }),
-                }),
-                sources = {
-                    { name = "nvim_lsp" },
-                    { name = "buffer" },
-                    { name = "path" },
-                    { name = "luasnip" },
-                },
-            })
-        end,
-    },
-    {
-        "vague-theme/vague.nvim",
-        event = "VimEnter",  -- loads on startup
-    },
-    {
-        "williamboman/mason.nvim",
-        cmd = { "Mason", "Masoninstall", "Masonuninstall" },
-        config = function()
-            require("mason").setup()
-        end,
-    },
-    {
-        "williamboman/mason-lspconfig.nvim",
-        after = "mason.nvim",
-        config = function()
-            require("mason-lspconfig").setup()
-        end,
-    },
-    {
-        "lewis6991/gitsigns.nvim",
-        event = "BufReadPre",
-        config = function()
-            require("gitsigns").setup()
-        end,
-    },
+-- Load plugins
+vim.pack.add({
+    { src = "https://github.com/vague2k/vague.nvim" },
+    { src = "https://github.com/metalelf0/black-metal-theme-neovim" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
+    { src = "https://github.com/mason-org/mason.nvim" },
+    { src = "https://github.com/williamboman/mason-lspconfig.nvim" },
+    { src = "https://github.com/L3MON4D3/LuaSnip" },
+    { src = "https://github.com/hrsh7th/nvim-cmp" },
+    { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
+    { src = "https://github.com/hrsh7th/cmp-buffer" },
+    { src = "https://github.com/hrsh7th/cmp-path" },
+    { src = "https://github.com/hrsh7th/cmp-cmdline" },
+    { src = "https://github.com/saadparwaiz1/cmp_luasnip" },
+    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+    { src = "https://github.com/tigran-sargsyan-w/nvim-42-format"},
+    { src = "https://github.com/Diogo-ss/42-header.nvim"},
+    { src = "https://github.com/hardyrafael17/norminette42.nvim"},
+    { src = "https://github.com/vyfor/cord.nvim"},
+    { src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
 })
 
-require("mason").setup()
-local mason_lspconfig = require("mason-lspconfig")
-mason_lspconfig.setup({
-    ensure_installed = { "lua_ls", "clangd" },
-    automatic_installation = true,
-})
+-- Setup after plugins are loaded
+vim.defer_fn(function()
+    -- Setup 42 utils
+    require("utils_42")
+    
+    -- Setup mason
+    require("mason").setup({
+        ui = {
+            icons = {
+                package_installed = "✓",
+                package_pending = "➜",
+                package_uninstalled = "✗"
+            }
+        }
+    })
+    
+    -- Setup mason-lspconfig
+    require("mason-lspconfig").setup({
+        ensure_installed = { "lua_ls", "clangd", "tinymist", "pyright" },
+        automatic_installation = true,
+    })
+    
+    -- Setup cmp
+    local cmp = require('cmp')
+    cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+            ['<C-n>']     = cmp.mapping.select_next_item(),
+            ['<C-p>']     = cmp.mapping.select_prev_item(),
+            ['<CR>']      = cmp.mapping.confirm({ select = true }),
+            ['<C-Space>'] = cmp.mapping.complete(),
+        }),
+        sources = cmp.config.sources({
+            { name = 'nvim_lsp' },
+            { name = 'luasnip' },
+        }, {
+            { name = 'buffer' },
+            { name = 'path' },
+        })
+    })
+    
+    -- Setup LSP
+    setup_lsp()
+    
+    -- Setup colorscheme
+    require("vague").setup({ transparent = true })
+    vim.cmd("colorscheme vague")
+    vim.cmd("hi statusline guibg=NONE")
+    vim.api.nvim_set_hl(0, "Comment", { fg = "#656665", italic = false })
+    
+    print("Configuration loaded successfully!")
+end, 100)
 
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-local servers = { "lua_ls", "clangd" }
-
-for _, name in ipairs(servers) do
-  vim.lsp.config[name] = {
-    capabilities = capabilities,
-  }
+-- LSP Setup Function
+function setup_lsp()
+    local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    
+    -- Common on_attach function for all LSP servers
+    local on_attach = function(client, bufnr)
+        -- Enable completion
+        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+        
+        -- Diagnostic configuration (ENABLE virtual text to see errors)
+        vim.diagnostic.config({
+            virtual_text = true,  -- CHANGED: true to see inline errors
+            signs = true,
+            underline = true,
+            update_in_insert = false,
+            severity_sort = true,
+            float = {
+                border = "rounded",
+                source = "always",
+                width = 60,
+            },
+        })
+        
+        -- Key mappings
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        map('n', 'K', vim.lsp.buf.hover, bufopts)
+        map('n', 'gd', vim.lsp.buf.definition, bufopts)
+        map('n', 'gr', vim.lsp.buf.references, bufopts)
+        map('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+        map('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+        map('n', '<leader>lf', vim.lsp.buf.format, bufopts)
+    end
+    
+    -- Setup individual LSP servers using lspconfig
+    local lspconfig = require('lspconfig')
+    
+    lspconfig.lua_ls.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+        settings = {
+            Lua = {
+                diagnostics = {
+                    globals = { 'vim' }
+                }
+            }
+        }
+    })
+    
+    lspconfig.clangd.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+    })
+    
+    lspconfig.tinymist.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+    })
+    
+    lspconfig.tsserver.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+    })
+    
+    lspconfig.pyright.setup({
+        capabilities = capabilities,
+        on_attach = on_attach,
+        settings = {
+            python = {
+                analysis = {
+                    typeCheckingMode = "basic",
+                    autoSearchPaths = true,
+                    useLibraryCodeForTypes = true,
+                    diagnosticMode = "workspace",
+                }
+            }
+        }
+    })
 end
 
-vim.diagnostic.config({
-    underline = false,
-    virtual_text = false,
-    signs = true,
-    float = {
-        border = "rounded",
-        source = "always", -- show source in popup
-        width = 60,
-    },
-})
-
--- show diagnostics in a floating window when you hold the cursor
-vim.api.nvim_create_autocmd("cursorhold", {
+-- Show diagnostics in a floating window when you hold the cursor
+vim.api.nvim_create_autocmd("CursorHold", {
     callback = function()
         vim.diagnostic.open_float(nil, {
             focus = false,
@@ -211,8 +195,11 @@ vim.api.nvim_create_autocmd("cursorhold", {
     end,
 })
 
--- colors
-vim.cmd("colorscheme vague")
-vim.cmd(":hi statusline guibg=none")
-vim.cmd("hi Normal guibg=#000000 ctermbg=0")
-vim.api.nvim_set_hl(0, "comment", { fg = "#FFFAFA", italic = true })
+-- Cord.nvim update handler
+vim.api.nvim_create_autocmd('PackChanged', {
+  callback = function(opts)
+    if opts.data.spec.name == 'cord.nvim' and opts.data.kind == 'update' then 
+      vim.cmd 'Cord update'
+    end
+  end
+})
