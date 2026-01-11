@@ -140,10 +140,9 @@ function setup_lsp()
         map('n', '<leader>lf', vim.lsp.buf.format, bufopts)
     end
     
-    -- Setup individual LSP servers using lspconfig
-    local lspconfig = require('lspconfig')
-    
-    lspconfig.lua_ls.setup({
+    -- Setup individual LSP servers using vim.lsp.config (Neovim 0.11+)
+    vim.lsp.config('lua_ls', {
+        cmd = { 'lua-language-server' },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -155,22 +154,26 @@ function setup_lsp()
         }
     })
     
-    lspconfig.clangd.setup({
+    vim.lsp.config('clangd', {
+        cmd = { 'clangd' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
-    lspconfig.tinymist.setup({
+    vim.lsp.config('tinymist', {
+        cmd = { 'tinymist' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
-    lspconfig.tsserver.setup({
+    vim.lsp.config('ts_ls', {
+        cmd = { 'typescript-language-server', '--stdio' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
-    lspconfig.pyright.setup({
+    vim.lsp.config('pyright', {
+        cmd = { 'pyright-langserver', '--stdio' },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -184,6 +187,9 @@ function setup_lsp()
             }
         }
     })
+    
+    -- Enable the configured servers
+    vim.lsp.enable({ 'lua_ls', 'clangd', 'tinymist', 'ts_ls', 'pyright' })
 end
 
 -- Show diagnostics in a floating window when you hold the cursor
