@@ -143,6 +143,8 @@ function setup_lsp()
     -- Setup individual LSP servers using vim.lsp.config (Neovim 0.11+)
     vim.lsp.config('lua_ls', {
         cmd = { 'lua-language-server' },
+        filetypes = { 'lua' },
+        root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -156,24 +158,32 @@ function setup_lsp()
     
     vim.lsp.config('clangd', {
         cmd = { 'clangd' },
+        filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda', 'proto' },
+        root_markers = { 'compile_commands.json', 'compile_flags.txt', '.clangd', '.git' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
     vim.lsp.config('tinymist', {
         cmd = { 'tinymist' },
+        filetypes = { 'typst' },
+        root_markers = { '.git' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
     vim.lsp.config('ts_ls', {
         cmd = { 'typescript-language-server', '--stdio' },
+        filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+        root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
         capabilities = capabilities,
         on_attach = on_attach,
     })
     
     vim.lsp.config('pyright', {
         cmd = { 'pyright-langserver', '--stdio' },
+        filetypes = { 'python' },
+        root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', 'pyrightconfig.json', '.git' },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
