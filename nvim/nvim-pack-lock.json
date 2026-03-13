@@ -56,6 +56,11 @@
       "rev": "4f6448fb9812a2405e0b9c7880c914de08d4e9f9",
       "src": "https://github.com/hardyrafael17/norminette42.nvim"
     },
+    "null-ls.nvim": {
+      "rev": "0010ea927ab7c09ef0ce9bf28c2b573fc302f5a7",
+      "src": "https://github.com/jose-elias-alvarez/null-ls.nvim",
+      "version": "'main'"
+    },
     "nvim-42-format": {
       "rev": "deffe3d61cffed36578ed29924e80ff2fa2af179",
       "src": "https://github.com/tigran-sargsyan-w/nvim-42-format"
@@ -63,6 +68,10 @@
     "nvim-cmp": {
       "rev": "85bbfad83f804f11688d1ab9486b459e699292d6",
       "src": "https://github.com/hrsh7th/nvim-cmp"
+    },
+    "nvim-lint": {
+      "rev": "ca6ea12daf0a4d92dc24c5c9ae22a1f0418ade37",
+      "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
       "rev": "92ee7d42320edfbb81f3cad851314ab197fa324a",
