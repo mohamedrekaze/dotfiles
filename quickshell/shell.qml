@@ -155,13 +155,15 @@ ShellRoot {
 
     // Slow timer for system stats
     Timer {
-        interval: 1000
+        interval: 50000
         running: true
         repeat: true
         onTriggered: {
             cpuProc.running = true
             memProc.running = true
             volProc.running = true
+			batteryProc.running = true
+			batteryStatusProc.running = true
         }
     }
 
@@ -292,42 +294,6 @@ ShellRoot {
                         elide: Text.ElideRight
                         maximumLineCount: 1
                     }
-
-                    // Text {
-                    //     text: "CPU: " + cpuUsage + "%"
-                    //     color: root.white
-                    //     font.pixelSize: root.fontSize
-                    //     font.family: root.fontFamily
-                    //     font.bold: true
-                    //     Layout.rightMargin: 8
-                    // }
-
-                    // Rectangle {
-                    //     Layout.preferredWidth: 1
-                    //     Layout.preferredHeight: 16
-                    //     Layout.alignment: Qt.AlignVCenter
-                    //     Layout.leftMargin: 0
-                    //     Layout.rightMargin: 8
-                    //     color: root.colMuted
-                    // }
-
-                    // Text {
-                    //     text: "Mem: " + memUsage + "%"
-                    //     color: root.white
-                    //     font.pixelSize: root.fontSize
-                    //     font.family: root.fontFamily
-                    //     font.bold: true
-                    //     Layout.rightMargin: 8
-                    // }
-
-                    // Rectangle {
-                    //     Layout.preferredWidth: 1
-                    //     Layout.preferredHeight: 16
-                    //     Layout.alignment: Qt.AlignVCenter
-                    //     Layout.leftMargin: 0
-                    //     Layout.rightMargin: 8
-                    //     color: root.colMuted
-                    // }
 
                     Text {
                         text: "Vol: " + volumeLevel + "%"
