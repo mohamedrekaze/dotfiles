@@ -10,25 +10,29 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
+vim.opt.guifont = "FiraCode Nerd Font Mono:h11"
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.ignorecase = true
 vim.opt.incsearch = true
-vim.opt.hlsearch = true
 vim.opt.scrolloff = 4
 vim.opt.signcolumn = "yes"
 vim.opt.clipboard = "unnamedplus"
 vim.o.updatetime = 200
 vim.opt.foldopen = "mark,percent,quickfix,search,tag,undo"
-
+vim.opt.cursorline = true
+vim.opt.hlsearch = false
 -- Leader key and helper
 vim.g.mapleader = " "
 local map = vim.keymap.set
-
 -- Terminal mappings (optional)
-map('t', '␛', "␜␎")
-map('t', '␏', "␜␏")
+map('t', '<Esc>', '<C-\\><C-n>')
+map('t', '<C-o>', '<C-\\><C-o>')
+
+vim.api.nvim_set_hl(0, "CursorLine", {
+	bg = "#181818"
+})
 
 -- Plugins
 vim.pack.add({
@@ -52,6 +56,13 @@ vim.pack.add({
 	{ src = "https://github.com/vyfor/cord.nvim"},
 	{ src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
 	{ src = "https://github.com/mfussenegger/nvim-lint"},
+	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
+	{ src = "https://github.com/nvim-lua/plenary.nvim" },
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim"},
+	{ src = 'https://github.com/nvim-mini/mini.icons', version = 'stable' },
+	{ src = "https://github.com/hat0uma/csvview.nvim" },
+	{ src = "https://github.com/nickjvandyke/opencode.nvim" },
+	{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "master" },
 })
 
 -- Colorscheme
@@ -73,18 +84,37 @@ vim.defer_fn(function()
 			}
 		}
 	}
+
 )
+
+local telescope = require("telescope")
+
+telescope.setup({
+  defaults = {
+    file_ignore_patterns = { "node_modules", ".git/" },
+
+    layout_strategy = "horizontal",
+    layout_config = {
+      width = 0.99,
+      height = 0.99,
+      vertical = {
+        preview_width = 0.50,
+      },
+    },
+  },
+})
 
 require("mason-lspconfig").setup({
 	ensure_installed = {
 		"lua_ls",
 		"clangd",
 		"tinymist",
-		"pyright"
+		"pyright",
+		"ruff",
+		"marksman"
 	},
 	automatic_installation = true
-}
-	)
+})
 
 	-- Completion (nvim-cmp)
 	local cmp = require('cmp')
@@ -108,6 +138,33 @@ require("mason-lspconfig").setup({
 
 setup_lsp()
 end, 100)
+
+require('render-markdown').setup({
+	opts = {
+		render_modes = {'n', 'c', 't'}
+	}
+}) -- only mandatory if you want to set custom options
+
+require('mini.icons').setup()
+
+-- CSV table view
+require("csvview").setup({
+	display_mode = "border",
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = { "*.csv", "*.tsv" },
+	callback = function()
+		require("csvview").enable(vim.api.nvim_get_current_buf())
+	end,
+})
+
+-- Typst preview
+vim.g.typst_pdf_viewer = 'zathura'
+vim.g.typst_preview_cursor_movement = 'follow'
+
+map('n', '<leader>tp', '<cmd>TypstPreview<CR>', { desc = 'Toggle Typst preview' })
+map('n', '<leader>tc', '<cmd>TypstPreviewStop<CR>', { desc = 'Stop Typst preview' })
 
 -- LSP Setup
 function setup_lsp()
@@ -158,16 +215,18 @@ function setup_lsp()
 		capabilities = capabilities,
 		on_attach = on_attach
 	})
-
 	-- Typst
 	vim.lsp.config('tinymist', {
 		cmd = { 'tinymist' },
 		filetypes = { 'typst' },
-		root_markers = { '.git' },
+		root_markers = { 'typst.toml', '.git' },
 		capabilities = capabilities,
-		on_attach = on_attach
+		on_attach = on_attach,
+		settings = {
+			exportPdf = 'never',
+		}
 	})
-
+	--
 	-- TypeScript/JS
 	vim.lsp.config('ts_ls', {
 		cmd = { 'typescript-language-server', '--stdio' },
@@ -197,8 +256,28 @@ function setup_lsp()
 			}
 		}
 	})
+
+	-- Python formatter/linter (ruff)
+	vim.lsp.config('ruff', {
+		cmd = { 'ruff', 'server' },
+		filetypes = { 'python' },
+		root_markers = { 'pyproject.toml', '.git' },
+		capabilities = capabilities,
+		on_attach = on_attach,
+	})
 end
 
+map('n', '<leader>ff', require('telescope.builtin').find_files, {})
+map('n', '<leader>fg', require('telescope.builtin').live_grep, {})
+map('n', '<leader>fb', require('telescope.builtin').buffers, {})
+map('n', '<leader>fh', require('telescope.builtin').help_tags, {})
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+vim.keymap.set("v", "<A-Up>", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "<A-Down>", ":m '>+1<CR>gv=gv")
 -- Diagnostics floating on hover
 vim.api.nvim_create_autocmd("CursorHold", {
 	callback = function() vim.diagnostic.open_float(nil, { focus = false }) end
@@ -206,7 +285,7 @@ vim.api.nvim_create_autocmd("CursorHold", {
 
 -- Linting
 local lint = require("lint")
-lint.linters_by_ft = { python = { "flake8" } }
+lint.linters_by_ft = { python = { "ruff" } }
 vim.api.nvim_create_autocmd({
 	"BufWritePost",
 	"BufReadPost",
@@ -222,3 +301,19 @@ vim.api.nvim_create_autocmd('PackChanged', {
 		if opts.data.spec.name == 'cord.nvim' and opts.data.kind == 'update' then vim.cmd 'Cord update' end
 	end
 })
+
+-- opencode.nvim
+vim.o.autoread = true
+vim.g.opencode_opts = {}
+
+vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
+vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end,       { desc = "Select opencode…" })
+
+vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
+vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+
+vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
+vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+
+vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })

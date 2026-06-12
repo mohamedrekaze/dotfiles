@@ -9,14 +9,10 @@ if ok2 then
     vim.keymap.set("n", "<F2>", "<cmd>Format<cr>", { desc = "Format with 42 formatter" })
 end
 
--- 42header.nvim setup
-local ok3, header = pcall(require, "42header")
-if ok3 then
-    header.setup({
-        default_map = true,
-        auto_update = true,
-        user = "morekaz",
-        mail = "morekaz@student.1337.ma",
-        git = { enabled = false },
-    })
-end
+vim.g.user = "morekaz"
+vim.g.mail = "morekaz@student.1337.ma"
+
+require("42header").setup({
+    default_map = true,
+    auto_update = true,
+})
