@@ -38,7 +38,7 @@ vim.api.nvim_set_hl(0, "CursorLine", {
 vim.pack.add({
 	{ src = "https://github.com/vague2k/vague.nvim" },
 	{ src = "https://github.com/metalelf0/black-metal-theme-neovim" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main" },
 	{ src = 'https://github.com/neovim/nvim-lspconfig' },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/williamboman/mason-lspconfig.nvim" },
@@ -50,19 +50,19 @@ vim.pack.add({
 	{ src = "https://github.com/hrsh7th/cmp-cmdline" },
 	{ src = "https://github.com/saadparwaiz1/cmp_luasnip" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
-	{ src = "https://github.com/tigran-sargsyan-w/nvim-42-format"},
-	{ src = "https://github.com/Diogo-ss/42-header.nvim"},
-	{ src = "https://github.com/hardyrafael17/norminette42.nvim"},
-	{ src = "https://github.com/vyfor/cord.nvim"},
+	{ src = "https://github.com/tigran-sargsyan-w/nvim-42-format" },
+	{ src = "https://github.com/Diogo-ss/42-header.nvim" },
+	{ src = "https://github.com/hardyrafael17/norminette42.nvim" },
 	{ src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
-	{ src = "https://github.com/mfussenegger/nvim-lint"},
+	{ src = "https://github.com/mfussenegger/nvim-lint" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
-	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim"},
-	{ src = 'https://github.com/nvim-mini/mini.icons', version = 'stable' },
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+	{ src = 'https://github.com/nvim-mini/mini.icons',                     version = 'stable' },
 	{ src = "https://github.com/hat0uma/csvview.nvim" },
 	{ src = "https://github.com/nickjvandyke/opencode.nvim" },
-	{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "master" },
+	{ src = "https://github.com/chomosuke/typst-preview.nvim",             version = "master" },
+	{ src = 'https://github.com/vyfor/cord.nvim' }
 })
 
 -- Colorscheme
@@ -85,63 +85,63 @@ vim.defer_fn(function()
 		}
 	}
 
-)
+	)
 
-local telescope = require("telescope")
+	local telescope = require("telescope")
 
-telescope.setup({
-  defaults = {
-    file_ignore_patterns = { "node_modules", ".git/" },
+	telescope.setup({
+		defaults = {
+			file_ignore_patterns = { "node_modules", ".git/" },
 
-    layout_strategy = "horizontal",
-    layout_config = {
-      width = 0.99,
-      height = 0.99,
-      vertical = {
-        preview_width = 0.50,
-      },
-    },
-  },
-})
+			layout_strategy = "horizontal",
+			layout_config = {
+				width = 0.80,
+				height = 0.80,
+				vertical = {
+					preview_width = 0.80,
+				},
+			},
+		},
+	})
 
-require("mason-lspconfig").setup({
-	ensure_installed = {
-		"lua_ls",
-		"clangd",
-		"tinymist",
-		"pyright",
-		"ruff",
-		"marksman"
-	},
-	automatic_installation = true
-})
+	require("mason-lspconfig").setup({
+		ensure_installed = {
+			"lua_ls",
+			"clangd",
+			"tinymist",
+			"pyright",
+			"ruff",
+			"marksman"
+		},
+		automatic_installation = true
+	})
 
 	-- Completion (nvim-cmp)
 	local cmp = require('cmp')
 	cmp.setup({
 		mapping = cmp.mapping.preset.insert({
-			['<C-n>'] = cmp.mapping.select_next_item(),
-			['<C-p>'] = cmp.mapping.select_prev_item(),
-			['<CR>']  = cmp.mapping.confirm({ select = true }),
+			['<C-n>']     = cmp.mapping.select_next_item(),
+			['<C-p>']     = cmp.mapping.select_prev_item(),
+			['<CR>']      = cmp.mapping.confirm({ select = true }),
 			['<C-Space>'] = cmp.mapping.complete(),
 		}),
 		sources = cmp.config.sources({
-			{ name = 'nvim_lsp' },
-			{ name = 'luasnip' }
-		},
-		{
-			{ name = 'buffer' },
-			{ name = 'path' }
-		}
-	)
-})
+				{ name = 'nvim_lsp' },
+				{ name = 'luasnip' }
+			},
+			{
+				{ name = 'buffer' },
+				{ name = 'path' }
+			}
+		)
+	})
 
-setup_lsp()
+	setup_lsp()
 end, 100)
 
 require('render-markdown').setup({
 	opts = {
-		render_modes = {'n', 'c', 't'}
+		render_modes = { 'n', 'c', 't' }
 	}
 }) -- only mandatory if you want to set custom options
 
@@ -181,20 +181,6 @@ function setup_lsp()
 			severity_sort = true,
 			float = { border = "rounded", source = "always", width = 60 }
 		})
-
-		local bufopts = {
-			noremap = true,
-			silent = true,
-			buffer = bufnr
-		}
-
-		map('n', 'K', vim.lsp.buf.hover, bufopts)
-		map('n', 'gd', vim.lsp.buf.definition, bufopts)
-		map('n', 'gD', vim.lsp.buf.declaration, bufopts)
-		map('n', 'gi', vim.lsp.buf.implementation, bufopts)
-		map('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-		map('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-		map('n', '<leader>lf', vim.lsp.buf.format, bufopts)
 	end
 
 	-- Lua
@@ -251,7 +237,6 @@ function setup_lsp()
 					useLibraryCodeForTypes = true,
 					diagnosticMode = "workspace",
 					autoImportCompletions = true,
-					pythonPath = "/full/path/to/your/venv/bin/python"
 				}
 			}
 		}
@@ -265,16 +250,37 @@ function setup_lsp()
 		capabilities = capabilities,
 		on_attach = on_attach,
 	})
+
+	vim.lsp.enable({
+		'lua_ls',
+		'clangd',
+		'tinymist',
+		'ts_ls',
+		'pyright',
+		'ruff',
+	})
 end
 
 map('n', '<leader>ff', require('telescope.builtin').find_files, {})
 map('n', '<leader>fg', require('telescope.builtin').live_grep, {})
 map('n', '<leader>fb', require('telescope.builtin').buffers, {})
 map('n', '<leader>fh', require('telescope.builtin').help_tags, {})
-vim.keymap.set("n", "<C-h>", "<C-w>h")
-vim.keymap.set("n", "<C-j>", "<C-w>j")
-vim.keymap.set("n", "<C-k>", "<C-w>k")
-vim.keymap.set("n", "<C-l>", "<C-w>l")
+map('n', '<leader>lf', function() vim.lsp.buf.format({ name = 'ruff', timeout_ms = 5000 }) end, { desc = 'LSP format' })
+map('n', 'K', vim.lsp.buf.hover, { desc = 'LSP hover' })
+map('n', 'gd', vim.lsp.buf.definition, { desc = 'LSP go to definition' })
+map('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP go to declaration' })
+map('n', 'gi', vim.lsp.buf.implementation, { desc = 'LSP go to implementation' })
+map('n', 'gr', vim.lsp.buf.references, { desc = 'LSP go to references' })
+map('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'LSP code action' })
+map('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'LSP rename' })
+map('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
+map('n', '<C-j>', '<C-w>j', { desc = 'Move to below window' })
+map('n', '<C-k>', '<C-w>k', { desc = 'Move to above window' })
+map('n', '<C-l>', '<C-w>l', { desc = 'Move to right window' })
+map('t', '<C-h>', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
+map('t', '<C-j>', '<C-\\><C-n><C-w>j', { desc = 'Move to below window' })
+map('t', '<C-k>', '<C-\\><C-n><C-w>k', { desc = 'Move to above window' })
+map('t', '<C-l>', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 
 vim.keymap.set("v", "<A-Up>", ":m '<-2<CR>gv=gv")
 vim.keymap.set("v", "<A-Down>", ":m '>+1<CR>gv=gv")
@@ -287,13 +293,13 @@ vim.api.nvim_create_autocmd("CursorHold", {
 local lint = require("lint")
 lint.linters_by_ft = { python = { "ruff" } }
 vim.api.nvim_create_autocmd({
-	"BufWritePost",
-	"BufReadPost",
-	"InsertLeave"
-},
-{
-	callback = function() lint.try_lint() end
-})
+		"BufWritePost",
+		"BufReadPost",
+		"InsertLeave"
+	},
+	{
+		callback = function() lint.try_lint() end
+	})
 
 -- Cord.nvim update handler
 vim.api.nvim_create_autocmd('PackChanged', {
@@ -307,13 +313,29 @@ vim.o.autoread = true
 vim.g.opencode_opts = {}
 
 vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
-vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end,       { desc = "Select opencode…" })
+vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end, { desc = "Select opencode…" })
 
-vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
-vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+vim.keymap.set({ "n", "x" }, "go", function() return require("opencode").operator("@this ") end,
+	{ desc = "Add range to opencode", expr = true })
+vim.keymap.set("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
+	{ desc = "Add line to opencode", expr = true })
 
-vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
-vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,
+	{ desc = "Scroll opencode up" })
+vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end,
+	{ desc = "Scroll opencode down" })
 
 vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
 vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+
+
+
+-- cord.nvim setup
+require('cord').setup {
+    text = {
+        workspace = '',
+    },
+}
+
+
+
